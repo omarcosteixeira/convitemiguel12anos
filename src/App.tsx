@@ -4,11 +4,24 @@
  */
 
 import { motion, AnimatePresence } from "motion/react";
-import { useState } from "react";
-import { ChevronLeft, Gift } from "lucide-react";
+import { useState, useRef } from "react";
+import { ChevronLeft, Gift, Play, Pause, Music } from "lucide-react";
 
 export default function App() {
   const [[currentPage, direction], setPageWithDirection] = useState([1, 0]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const togglePlay = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(e => console.error("Playback error:", e));
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
 
   const variants = {
     enter: (direction: number) => ({
@@ -33,6 +46,38 @@ export default function App() {
     <div className="min-h-screen font-sans text-gray-800 antialiased flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md md:max-w-lg lg:max-w-xl mx-auto w-full relative">
         
+        {/* Mini Music Player */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 flex items-center justify-between bg-white/80 backdrop-blur-sm border border-gray-100 rounded-2xl p-3 shadow-sm"
+        >
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-full ${isPlaying ? 'bg-zinc-800 text-white animate-pulse' : 'bg-gray-100 text-gray-400'}`}>
+              <Music size={18} />
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Música</p>
+              <p className="text-xs font-bold text-gray-700 truncate max-w-[150px]">Tocando agora</p>
+            </div>
+          </div>
+          
+          <button 
+            onClick={togglePlay}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-800 text-white hover:bg-zinc-700 transition-all active:scale-90 cursor-pointer shadow-md"
+          >
+            {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} className="ml-0.5" fill="currentColor" />}
+          </button>
+
+          <audio 
+            ref={audioRef}
+            src="/audio/musica.mp3"
+            loop
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+          />
+        </motion.div>
+
         <div className="relative overflow-hidden min-h-[600px] flex items-center">
           <AnimatePresence initial={false} custom={direction} mode="wait">
             {currentPage === 1 ? (
