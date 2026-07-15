@@ -1,0 +1,6 @@
+{
+  "name": "Convite do Miguel",
+  "description": "Uma landing page elegante para o convite de aniversário do Miguel, integrando designs do Canva.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
